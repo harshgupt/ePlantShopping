@@ -3,36 +3,53 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 
-const CartItem = ({ onContinueShopping }) => {
-  const cart = useSelector(state => state.cart.items);
-  const dispatch = useDispatch();
+const CartItem = ({ onContinueShopping, onRemoveFromCart }) => {
+const cart = useSelector(state => state.cart.items);
+const dispatch = useDispatch();
 
-  // Calculate total amount for all products in the cart
-  const calculateTotalAmount = () => {
- 
-  };
+// Calculate total amount for all products in the cart
+const calculateTotalAmount = () => {
+    let total = 0;
+    cart.forEach((item) => {
+        const itemCost = parseFloat(item.cost.substring(1));
+        total += itemCost * item.quantity;
+    });
+    return total;
+};
 
-  const handleContinueShopping = (e) => {
-   
-  };
+const handleContinueShopping = (e) => {
+    onContinueShopping(e);
+};
 
+const handleCheckoutShopping = (e) => {
+    alert('Functionality to be added for future reference');
+};
 
+const handleIncrement = (item) => {
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+};
 
-  const handleIncrement = (item) => {
-  };
+const handleDecrement = (item) => {
+    if(item.quantity > 1){
+        dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    } else if(item.quantity === 1) {
+        handleRemove(item);
+    }
+};
 
-  const handleDecrement = (item) => {
-   
-  };
+const handleRemove = (item) => {
+    dispatch(removeItem(item.name));
+    if (onRemoveFromCart) {
+        onRemoveFromCart(item.name);
+    }
+};
 
-  const handleRemove = (item) => {
-  };
+// Calculate total cost based on quantity for an item
+const calculateTotalCost = (item) => {
+    return parseFloat(item.cost.substring(1)) * item.quantity;
+};
 
-  // Calculate total cost based on quantity for an item
-  const calculateTotalCost = (item) => {
-  };
-
-  return (
+return (
     <div className="cart-container">
       <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
       <div>
@@ -57,12 +74,10 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={(e) => handleCheckoutShopping(e)}>Checkout</button>
       </div>
     </div>
   );
 };
 
 export default CartItem;
-
-
